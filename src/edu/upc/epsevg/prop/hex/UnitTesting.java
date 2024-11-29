@@ -16,7 +16,11 @@ import edu.upc.epsevg.prop.hex.players.ProfeGameStatus3.Result;
  */
 public class UnitTesting {
     
-    
+     //CLASSE PROVA, ES IMPORTANT crear 15 taulers i comprovar que nostra heuristica es tal i com creem perque es molt complicat fer-ho
+    //quin es el fonament principal del joc? quina distancia tinc fins a arribar a l'altre canto
+    //mitjançant pel algoritme de Dijsktra, hi ha una configuracio inicial perque es una configuracio virual i
+    //virtualment aixo es un virtual guanyada, hem de fer funcions a part i no esborrar els casos i si provem 10 taulers diferents 
+    //aixi podem testejar-los i que el codi funciona be
     
     public static void main(String[] args) {
     

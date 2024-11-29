@@ -16,7 +16,7 @@ import java.util.Random;
  * Jugador aleatori
  * @author bernat
  */
-public class RandomPlayer implements IPlayer, IAuto {
+public class RandomPlayer implements IPlayer, IAuto { //RANDOM PLAYER HEM DE IMPLEMENTAR EL IPlayer per crear un nou jugador
 
     private String name;
     
@@ -26,7 +26,7 @@ public class RandomPlayer implements IPlayer, IAuto {
     }
 
     @Override
-    public void timeout() {
+    public void timeout() { //nomes posar un bolea = true
         // Nothing to do! I'm so fast, I never timeout 8-)
     }
 
@@ -38,13 +38,13 @@ public class RandomPlayer implements IPlayer, IAuto {
      * @return el moviment que fa el jugador.
      */
     @Override
-    public PlayerMove move(HexGameStatus s) {
+    public PlayerMove move(HexGameStatus s) { //en aquest GameStatus es el status i hem de implementar
 
         int freeCells = 0;
-        for(int i=0;i<s.getSize();i++){
+        for(int i=0;i<s.getSize();i++){ //sempre fem un getsize
           for(int k=0;k<s.getSize();k++){
               if(s.getPos(i, k)==0) {
-                  freeCells++;
+                  freeCells++; //incrementar el comptador de caselles buides
               }
             }  
         }
@@ -57,7 +57,10 @@ public class RandomPlayer implements IPlayer, IAuto {
         for(  int i=0;i<s.getSize();i++){
           for(int k=0;k<s.getSize();k++){
               if(s.getPos(i, k)==0){
-                  if(freeCells==q) return new PlayerMove( new Point(i,k), 0L, 0, SearchType.RANDOM);
+                  if(freeCells==q) return new PlayerMove( new Point(i,k), 0L, 0, SearchType.RANDOM); //fila i,k??
+                  //Hem de implementar un player amb MINIMAX AMB PODA ALFA-BETA i un altre amb MINIMAX AMB IDS
+                  //per optimitzar el IDS cada cop que recalculem una jugada millor hem de possar-la al inici com a primer fill de cada jugada
+                  //es molt bo y la poda millora molt perque es optimitza i es facil i es cost constant fer ho a cada nivell
                   freeCells++;
               }
             }  

@@ -38,7 +38,8 @@ public class HeadlessGame {
     }
 
     //=====================================================================================0
-    public HeadlessGame(IPlayer p1, IPlayer p2, int size, int timeout, int gameCount) {
+    public HeadlessGame(IPlayer p1, IPlayer p2, int size, int timeout, int gameCount) { //crear HeadlessGame, time i games diu quantes jugades vols
+        //enfrontar als jugadors? i et dona un informe, aixo s'ha de fer contra el random  
         this.size = size;
         this.players = new IPlayer[2];
         players[0] = p1;
