@@ -57,7 +57,7 @@ public class RandomPlayer implements IPlayer, IAuto { //RANDOM PLAYER HEM DE IMP
         for(  int i=0;i<s.getSize();i++){
           for(int k=0;k<s.getSize();k++){
               if(s.getPos(i, k)==0){
-                  if(freeCells==q) return new PlayerMove( new Point(i,k), 0L, 0, SearchType.RANDOM); //fila i,k??
+                  if(freeCells==q) return new PlayerMove( new Point(i,k), 0L, 0, SearchType.RANDOM); //fila i,k?? x horitzontal i k es la y
                   //Hem de implementar un player amb MINIMAX AMB PODA ALFA-BETA i un altre amb MINIMAX AMB IDS
                   //per optimitzar el IDS cada cop que recalculem una jugada millor hem de possar-la al inici com a primer fill de cada jugada
                   //es molt bo y la poda millora molt perque es optimitza i es facil i es cost constant fer ho a cada nivell
