@@ -7,7 +7,7 @@ import edu.upc.epsevg.prop.hex.IPlayer;
 import edu.upc.epsevg.prop.hex.IPlayer;
 import edu.upc.epsevg.prop.hex.players.H_E_X_Player;
 
-
+import edu.upc.epsevg.prop.hex.players.Hexmastery;
 
 import javax.swing.SwingUtilities;
 
@@ -30,8 +30,8 @@ public class Game {
                 
                 IPlayer player1 = new H_E_X_Player(2/*GB*/); //limit de RAM
                 
-                IPlayer player2 = new HumanPlayer("Human");
-                                
+                //IPlayer player2 = new HumanPlayer("Human");
+                  IPlayer player2 = new Hexmastery("HexMastery", 4);              
                 new Board(player1 , player2, 11 /*mida*/,  10/*s*/, false); //player, mida de tauler i al principi fer.ho amb 9 i despres els tests fer-ho amb 11
                 //el time runnow es de 10s , el que hem de fer es un MINIMAX on li hem de dir el numero denivells i quan fem aixo hem de fer un MINIMAX +ID  (Iterative detecting)  començo
                 //baixant per un nivell despres amb 2 nivells i si tot OK torno a baixar un nivell més a 3 i em dona un timeout i es queda amb el minimax en mitat, quan passa
