@@ -6,9 +6,11 @@
 package edu.upc.epsevg.prop.hex.players;
 
 import edu.upc.epsevg.prop.hex.HexGameStatus;
+import edu.upc.epsevg.prop.hex.IAuto;
 import edu.upc.epsevg.prop.hex.IPlayer;
 import edu.upc.epsevg.prop.hex.MoveNode;
 import edu.upc.epsevg.prop.hex.PlayerMove;
+import edu.upc.epsevg.prop.hex.SearchType;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,41 +24,43 @@ import java.util.List;
  * Implementación del jugador Hexmastery usando el algoritmo MIN-MAX con poda alfa-beta.
  * @author Aleli
  */
-public class Hexmastery implements IPlayer {
+public class Hexmastery implements IPlayer , IAuto{
 
     private static final int INFINIT = Integer.MAX_VALUE;
     private static final int MENYS_INFINIT = Integer.MIN_VALUE;
 
     private String _name; // Nombre del jugador
     private int _profMax; // Profundidad máxima del árbol de búsqueda
-    private int _nJugades;
-
+    //private int _nJugades;
+    long nodesExplorats;
+    
     public Hexmastery(String name, int profunditatMaxima) {
         this._name = name;
         this._profMax = profunditatMaxima;
-        this._nJugades = 0;
+        //this._nJugades = 0;
+        
     }
 
     @Override
     public PlayerMove move(HexGameStatus s) {
-        Point millorMoviment = null;
-        int millorValor = MENYS_INFINIT;
-        int colorAct = s.getCurrentPlayerColor();
-        ++_nJugades;
+        Point millormov = null; //Inicialitzem amb el millormoviment anull
+        nodesExplorats = 0;
+        int h_actual = MENYS_INFINIT;
+        int h_alpha = MENYS_INFINIT;
+        int h_beta = INFINIT;        
+        List<Point> possiblesMovs = obtePossiblesMoviments(s);
         
-        List<Point> possiblesMoviments = convertirMoves(s.getMoves()); // Obtener movimientos posibles
-        for (Point moviment : possiblesMoviments) {
-            HexGameStatus nouEstat = new HexGameStatus(s);
-            nouEstat.placeStone(moviment);
-
-            int valor = MIN(nouEstat, 1, colorAct, MENYS_INFINIT, INFINIT);
-            if (valor > millorValor) {
-                millorValor = valor;
-                millorMoviment = moviment;
+        for (Point mov : possiblesMovs) {
+            HexGameStatus AuxEstat = new HexGameStatus(s);
+            AuxEstat.placeStone(mov);
+            int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
+            if (h_actual <= h_minima) {
+                    h_actual = h_minima;
+                    millormov = mov;
             }
         }
-        System.out.println("Nombre de jugades:" + _nJugades);
-        return new PlayerMove(millorMoviment, _nJugades, _profMax, null);
+        
+        return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
     }
 
     @Override
@@ -79,27 +83,23 @@ public class Hexmastery implements IPlayer {
      * @return El valor mínimo posible del estado
      */
     private int MIN(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == _profMax || s.isGameOver()) {
-            return 0; // Sin heurística
-        }
+        if (profunditat == 0 ) return 0;
 
-        int millorValor = INFINIT;
-        List<Point> possiblesMoviments = convertirMoves(s.getMoves());
-
-        for (Point moviment : possiblesMoviments) {
+        int millorvalor = INFINIT;
+        List<Point> possiblesMoviments = obtePossiblesMoviments(s);
+        
+        for (Point mov : possiblesMoviments) {
+            ++nodesExplorats;
             HexGameStatus nouEstat = new HexGameStatus(s);
-            nouEstat.placeStone(moviment);
-
-            int valor = MAX(nouEstat, profunditat + 1, colorAct, _alpha, _beta);
-            millorValor = Math.min(millorValor, valor);
-            _beta = Math.min(_beta, millorValor);
-
-            if (_beta <= _alpha) {
-                break; // Poda alfa-beta
+            nouEstat.placeStone(mov);
+            int ha = MAX(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
+            millorvalor = Math.min(millorvalor, ha);
+            _beta = Math.min(millorvalor, _beta);
+            if (_beta <= _alpha) { // PODA
+                break;
             }
         }
-
-        return millorValor;
+        return millorvalor;
     }
 
     /**
@@ -112,39 +112,34 @@ public class Hexmastery implements IPlayer {
      * @return El valor máximo posible del estado
      */
     private int MAX(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == _profMax || s.isGameOver()) {
-            return 0; // Sin heurística
-        }
+        if (profunditat == 0 ) return 0;
 
-        int millorValor = MENYS_INFINIT;
-        List<Point> possiblesMoviments = convertirMoves(s.getMoves());
-
-        for (Point moviment : possiblesMoviments) {
+        int millorvalor = MENYS_INFINIT;
+        List<Point> possiblesMoviments = obtePossiblesMoviments(s);
+        
+        for (Point mov : possiblesMoviments) {
+            ++nodesExplorats;
             HexGameStatus nouEstat = new HexGameStatus(s);
-            nouEstat.placeStone(moviment);
-
-            int valor = MIN(nouEstat, profunditat + 1, colorAct, _alpha, _beta);
-            millorValor = Math.max(millorValor, valor);
-            _alpha = Math.max(_alpha, millorValor);
-
-            if (_beta <= _alpha) {
-                break; // Poda alfa-beta
+            nouEstat.placeStone(mov);
+            int ha = MIN(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
+            millorvalor = Math.max(millorvalor, ha);
+            _alpha = Math.max(millorvalor, _alpha);
+            if (_beta <= _alpha) { // PODA
+                break;
             }
         }
-
-        return millorValor;
+        return millorvalor;
     }
 
-    /**
-     * Convierte una lista de MoveNode a una lista de Point.
-     * @param moves Lista de MoveNode
-     * @return Lista de Point extraída de MoveNode
-     */
-    private List<Point> convertirMoves(List<MoveNode> moves) {
-        List<Point> points = new ArrayList<>();
-        for (MoveNode move : moves) {
-            points.add(move.getPoint());
-        }
-        return points;
-    }
+
+  private List<Point> obtePossiblesMoviments(HexGameStatus s) {
+      List<Point> moviments = new ArrayList<>();
+      for (int i = 0; i < s.getSize(); ++i) {
+          for (int j = 0; j < s.getSize(); ++j) {
+              if (s.getPos(i, j) == 0) moviments.add(new Point(i,j));
+          }
+      }
+      return moviments;
+  }
+  
 }
