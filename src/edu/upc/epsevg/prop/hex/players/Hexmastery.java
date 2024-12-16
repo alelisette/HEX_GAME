@@ -8,7 +8,6 @@ package edu.upc.epsevg.prop.hex.players;
 import edu.upc.epsevg.prop.hex.HexGameStatus;
 import edu.upc.epsevg.prop.hex.IAuto;
 import edu.upc.epsevg.prop.hex.IPlayer;
-import edu.upc.epsevg.prop.hex.MoveNode;
 import edu.upc.epsevg.prop.hex.PlayerMove;
 import edu.upc.epsevg.prop.hex.SearchType;
 import java.awt.Point;
@@ -33,6 +32,7 @@ public class Hexmastery implements IPlayer , IAuto{
     private int _profMax; // Profundidad máxima del árbol de búsqueda
     //private int _nJugades;
     long nodesExplorats;
+    
     
     public Hexmastery(String name, int profunditatMaxima) {
         this._name = name;
@@ -65,7 +65,8 @@ public class Hexmastery implements IPlayer , IAuto{
 
     @Override
     public void timeout() {
-        System.out.println("Temps esgontant..");
+        //System.out.println("Temps esgontant..");
+        
     }
 
     @Override
