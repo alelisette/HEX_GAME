@@ -9,6 +9,7 @@ import edu.upc.epsevg.prop.hex.HexGameStatus;
 import edu.upc.epsevg.prop.hex.IAuto;
 import edu.upc.epsevg.prop.hex.IPlayer;
 import edu.upc.epsevg.prop.hex.PlayerMove;
+import edu.upc.epsevg.prop.hex.PlayerType;
 import edu.upc.epsevg.prop.hex.SearchType;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -16,12 +17,12 @@ import java.util.List;
 
 /**
  *
- * @author Aleli
+ * @author AleLisette
  */
 
 /**
  * Implementación del jugador Hexmastery usando el algoritmo MIN-MAX con poda alfa-beta.
- * @author Aleli
+ * @author Alelisette
  */
 public class Hexmastery implements IPlayer , IAuto{
 
@@ -32,23 +33,30 @@ public class Hexmastery implements IPlayer , IAuto{
     private int _profMax; // Profundidad máxima del árbol de búsqueda
     //private int _nJugades;
     long nodesExplorats;
+    //private boolean _ambids;
+    //private boolean istimeout = false;
+    private PlayerType myplayer;
     
     
-    public Hexmastery(String name, int profunditatMaxima) {
+    public Hexmastery(String name, int profunditatMaxima) { //boolean ambids
         this._name = name;
         this._profMax = profunditatMaxima;
         //this._nJugades = 0;
-        
+        //this._ambids = ids;
     }
 
     @Override
     public PlayerMove move(HexGameStatus s) {
+        myplayer = s.getCurrentPlayer();
         Point millormov = null; //Inicialitzem amb el millormoviment anull
         nodesExplorats = 0;
         int h_actual = MENYS_INFINIT;
         int h_alpha = MENYS_INFINIT;
         int h_beta = INFINIT;        
         List<Point> possiblesMovs = obtePossiblesMoviments(s);
+        
+        //comprovem la heuristica Heuristica bidirectionalDijkstra = new Heuristica();
+        //int distanciaMinima = bidirectionalDijkstra.dijkstra(s);
         
         for (Point mov : possiblesMovs) {
             HexGameStatus AuxEstat = new HexGameStatus(s);
@@ -62,11 +70,37 @@ public class Hexmastery implements IPlayer , IAuto{
         
         return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
     }
-
+/*
+        @Override
+    public PlayerMove move(HexGameStatus s) {
+        Point millormov = null; //Inicialitzem amb el millormoviment a null
+        nodesExplorats = 0;
+        int h_actual = MENYS_INFINIT;
+        int h_alpha = MENYS_INFINIT;
+        int h_beta = INFINIT;        
+        List<Point> possiblesMovs = obtePossiblesMoviments(s); //FALTA OPTMITZAR, ordenar nodes millors valorats 
+        
+        for (Point mov : possiblesMovs) {
+            HexGameStatus AuxEstat = new HexGameStatus(s);
+            AuxEstat.placeStone(mov);
+            int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
+            if (h_actual <= h_minima) {
+                    h_actual = h_minima;
+                    millormov = mov;
+            }
+        }
+        
+        if (_ambids == true)   return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX_IDS);
+        else {
+        return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
+        }
+    }
+    */
+    
     @Override
     public void timeout() {
         //System.out.println("Temps esgontant..");
-        
+        //istimeout = true;
     }
 
     @Override
@@ -85,7 +119,13 @@ public class Hexmastery implements IPlayer , IAuto{
      */
     private int MIN(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
         if (profunditat == 0 ) return 0;
-
+        if(s.isGameOver()) {
+            if (s.GetWinner()== myplayer) {
+                return MENYS_INFINIT;
+            } else {
+                return INFINIT;
+            } 
+        }
         int millorvalor = INFINIT;
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
         
@@ -113,8 +153,14 @@ public class Hexmastery implements IPlayer , IAuto{
      * @return El valor máximo posible del estado
      */
     private int MAX(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == 0 ) return 0;
-
+        if (profunditat == 0 ) return 0;    //return heuristica;
+        if(s.isGameOver()) {
+            if (s.GetWinner()==myplayer) {
+                return INFINIT;
+            } else {
+                return MENYS_INFINIT;
+            }   
+        }
         int millorvalor = MENYS_INFINIT;
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
         

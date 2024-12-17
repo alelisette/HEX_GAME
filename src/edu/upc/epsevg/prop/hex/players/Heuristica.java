@@ -8,6 +8,9 @@ package edu.upc.epsevg.prop.hex.players;
  *
  * @author Alelisette
  */
+
 public class Heuristica {
-    
-}
+    //heuristica = h1 + h2 + h3 + h4
+    int _millorvalor;
+     
+} 
