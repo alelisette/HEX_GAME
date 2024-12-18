@@ -62,7 +62,9 @@ public class Hexmastery implements IPlayer , IAuto{
             HexGameStatus AuxEstat = new HexGameStatus(s);
             AuxEstat.placeStone(mov);
             int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
+            System.out.println("heuristicaminima"+ h_minima + " ,  " + mov);
             if (h_actual <= h_minima) {
+                
                     h_actual = h_minima;
                     millormov = mov;
             }
@@ -121,16 +123,16 @@ public class Hexmastery implements IPlayer , IAuto{
         if (profunditat == 0 ) return 0;
         if(s.isGameOver()) {
             if (s.GetWinner()== myplayer) {
-                return MENYS_INFINIT;
-            } else {
                 return INFINIT;
+            } else {
+                return MENYS_INFINIT;
             } 
         }
         int millorvalor = INFINIT;
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
         
         for (Point mov : possiblesMoviments) {
-            ++nodesExplorats;
+            //if p0 ++nodesExplorats;
             HexGameStatus nouEstat = new HexGameStatus(s);
             nouEstat.placeStone(mov);
             int ha = MAX(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
