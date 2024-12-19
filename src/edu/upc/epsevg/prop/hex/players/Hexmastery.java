@@ -36,6 +36,7 @@ public class Hexmastery implements IPlayer , IAuto{
     //private boolean _ambids;
     //private boolean istimeout = false;
     private PlayerType myplayer;
+    private boolean istimeout;
     
     
     public Hexmastery(String name, int profunditatMaxima) { //boolean ambids
@@ -45,6 +46,13 @@ public class Hexmastery implements IPlayer , IAuto{
         //this._ambids = ids;
     }
 
+    //constructor minimax with IDS
+    public Hexmastery(String name) {
+        this._name = name;
+        this._profMax = 1;
+        this.istimeout = false;
+    }
+    
     @Override
     public PlayerMove move(HexGameStatus s) {
         myplayer = s.getCurrentPlayer();
@@ -57,17 +65,24 @@ public class Hexmastery implements IPlayer , IAuto{
         
         //comprovem la heuristica Heuristica bidirectionalDijkstra = new Heuristica();
         //int distanciaMinima = bidirectionalDijkstra.dijkstra(s);
-        
+        while (!istimeout) {
         for (Point mov : possiblesMovs) {
             HexGameStatus AuxEstat = new HexGameStatus(s);
             AuxEstat.placeStone(mov);
             int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
-            System.out.println("heuristicaminima"+ h_minima + " ,  " + mov);
+            //proves System.out.println("heuristicaminima"+ h_minima + " ,  " + mov);
             if (h_actual <= h_minima) {
-                
                     h_actual = h_minima;
                     millormov = mov;
             }
+          }
+          ++_profMax;
+        }
+        
+        if (istimeout && millormov != null) {
+        // Devuelve el último nodo completamente evaluado si se detectó timeout
+            return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
+
         }
         
         return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
@@ -102,7 +117,7 @@ public class Hexmastery implements IPlayer , IAuto{
     @Override
     public void timeout() {
         //System.out.println("Temps esgontant..");
-        //istimeout = true;
+        istimeout = true;
     }
 
     @Override
@@ -120,7 +135,7 @@ public class Hexmastery implements IPlayer , IAuto{
      * @return El valor mínimo posible del estado
      */
     private int MIN(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == 0 ) return 0;
+        if (profunditat == 0 || istimeout ) return 0;
         if(s.isGameOver()) {
             if (s.GetWinner()== myplayer) {
                 return INFINIT;
@@ -155,7 +170,7 @@ public class Hexmastery implements IPlayer , IAuto{
      * @return El valor máximo posible del estado
      */
     private int MAX(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == 0 ) return 0;    //return heuristica;
+        if (profunditat == 0 || istimeout) return 0;    //return heuristica;
         if(s.isGameOver()) {
             if (s.GetWinner()==myplayer) {
                 return INFINIT;

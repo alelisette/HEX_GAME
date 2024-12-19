@@ -39,8 +39,9 @@ public class UnitTesting {
         };
 
 
-        HexGameStatus gs = new HexGameStatus(board, PlayerType.PLAYER1);        
-        
+        //HexGameStatus gs = new HexGameStatus(board, PlayerType.PLAYER1);        
+        //int d = Dijkstra.calculaDistanciaMinima(gs, PlayerType.PLAYER1);
+        //System.out.println("D:"+d);
  
     }
     
