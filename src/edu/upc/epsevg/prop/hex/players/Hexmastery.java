@@ -56,64 +56,40 @@ public class Hexmastery implements IPlayer , IAuto{
     @Override
     public PlayerMove move(HexGameStatus s) {
         myplayer = s.getCurrentPlayer();
-        Point millormov = null; //Inicialitzem amb el millormoviment anull
+        Point millormov = null; //Inicialitzem amb el millormoviment a null
+        Point millormovTotal = null;
         nodesExplorats = 0;
         int h_actual = MENYS_INFINIT;
         int h_alpha = MENYS_INFINIT;
         int h_beta = INFINIT;        
         List<Point> possiblesMovs = obtePossiblesMoviments(s);
-        
-        //comprovem la heuristica Heuristica bidirectionalDijkstra = new Heuristica();
-        //int distanciaMinima = bidirectionalDijkstra.dijkstra(s);
+        istimeout = false;
+        //comprovem la heuristica 
         while (!istimeout) {
         for (Point mov : possiblesMovs) {
             HexGameStatus AuxEstat = new HexGameStatus(s);
             AuxEstat.placeStone(mov);
             int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
-            //proves System.out.println("heuristicaminima"+ h_minima + " ,  " + mov);
-            if (h_actual <= h_minima) {
+            System.out.println("heuristicaminima"+ h_minima + " ,  " + mov +"profMax: "+ _profMax);
+            if (h_actual < h_minima) {
                     h_actual = h_minima;
                     millormov = mov;
             }
           }
+        // Si completamos la iteración sin timeout, actualizamos `millormovTotal`
+        if (!istimeout) {
+            millormovTotal = millormov;
+        }
           ++_profMax;
         }
         
-        if (istimeout && millormov != null) {
+        if (istimeout && millormov == null) {
         // Devuelve el último nodo completamente evaluado si se detectó timeout
-            return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
+            return new PlayerMove(millormovTotal, nodesExplorats, _profMax, SearchType.MINIMAX);
+        } 
+        return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
+    }
 
-        }
-        
-        return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
-    }
-/*
-        @Override
-    public PlayerMove move(HexGameStatus s) {
-        Point millormov = null; //Inicialitzem amb el millormoviment a null
-        nodesExplorats = 0;
-        int h_actual = MENYS_INFINIT;
-        int h_alpha = MENYS_INFINIT;
-        int h_beta = INFINIT;        
-        List<Point> possiblesMovs = obtePossiblesMoviments(s); //FALTA OPTMITZAR, ordenar nodes millors valorats 
-        
-        for (Point mov : possiblesMovs) {
-            HexGameStatus AuxEstat = new HexGameStatus(s);
-            AuxEstat.placeStone(mov);
-            int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
-            if (h_actual <= h_minima) {
-                    h_actual = h_minima;
-                    millormov = mov;
-            }
-        }
-        
-        if (_ambids == true)   return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX_IDS);
-        else {
-        return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
-        }
-    }
-    */
-    
     @Override
     public void timeout() {
         //System.out.println("Temps esgontant..");
@@ -170,7 +146,10 @@ public class Hexmastery implements IPlayer , IAuto{
      * @return El valor máximo posible del estado
      */
     private int MAX(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == 0 || istimeout) return 0;    //return heuristica;
+        if (profunditat == 0 || istimeout) {
+            ++nodesExplorats;
+            return 0;
+        }    //return heuristica;
         if(s.isGameOver()) {
             if (s.GetWinner()==myplayer) {
                 return INFINIT;
@@ -182,7 +161,7 @@ public class Hexmastery implements IPlayer , IAuto{
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
         
         for (Point mov : possiblesMoviments) {
-            ++nodesExplorats;
+            //++nodesExplorats;
             HexGameStatus nouEstat = new HexGameStatus(s);
             nouEstat.placeStone(mov);
             int ha = MIN(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
