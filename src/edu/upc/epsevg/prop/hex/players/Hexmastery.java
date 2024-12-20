@@ -57,36 +57,34 @@ public class Hexmastery implements IPlayer , IAuto{
     public PlayerMove move(HexGameStatus s) {
         myplayer = s.getCurrentPlayer();
         Point millormov = null; //Inicialitzem amb el millormoviment a null
-        Point millormovTotal = null;
         nodesExplorats = 0;
         int h_actual = MENYS_INFINIT;
         int h_alpha = MENYS_INFINIT;
         int h_beta = INFINIT;        
         List<Point> possiblesMovs = obtePossiblesMoviments(s);
         istimeout = false;
-        //comprovem la heuristica 
+        //comprovem la heuristica Heuristica bidirectionalDijkstra = new Heuristica();
+        //int distanciaMinima = bidirectionalDijkstra.dijkstra(s);
         while (!istimeout) {
         for (Point mov : possiblesMovs) {
             HexGameStatus AuxEstat = new HexGameStatus(s);
             AuxEstat.placeStone(mov);
             int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
-            System.out.println("heuristicaminima"+ h_minima + " ,  " + mov +"profMax: "+ _profMax);
+            //proves System.out.println("heuristicaminima"+ h_minima + " ,  " + mov);
             if (h_actual < h_minima) {
                     h_actual = h_minima;
                     millormov = mov;
+                    
             }
           }
-        // Si completamos la iteración sin timeout, actualizamos `millormovTotal`
-        if (!istimeout) {
-            millormovTotal = millormov;
-        }
           ++_profMax;
         }
         
-        if (istimeout && millormov == null) {
+        if (istimeout) {
         // Devuelve el último nodo completamente evaluado si se detectó timeout
-            return new PlayerMove(millormovTotal, nodesExplorats, _profMax, SearchType.MINIMAX);
-        } 
+            return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
+        }
+        
         return new PlayerMove(millormov, nodesExplorats, _profMax, SearchType.MINIMAX);
     }
 
