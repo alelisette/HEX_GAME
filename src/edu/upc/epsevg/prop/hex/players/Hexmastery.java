@@ -35,7 +35,7 @@ public class Hexmastery implements IPlayer , IAuto {
     private PlayerType _myplayer;
     private boolean _istimeout;
     
-    
+    //constructor minimax 
     public Hexmastery(String name, int profunditatMaxima) {
         this._name = name;
         this._profMax = profunditatMaxima;
