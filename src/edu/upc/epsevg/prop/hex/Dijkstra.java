@@ -13,7 +13,7 @@ import java.util.Set;
  *
  * @author AleLisettes
  */
-class Dijkstra {
+public class Dijkstra {
     static private HexGameStatus _hgs;
     static private int _colorJugador;
     static private int _midaTauler;
@@ -23,7 +23,7 @@ class Dijkstra {
     return 0;
     }*/
 
-    static int calculaDistanciaMinima(HexGameStatus gs, PlayerType jugador) {
+    static public int calculaDistanciaMinima(HexGameStatus gs, PlayerType jugador) {
         _hgs = gs;
         _colorJugador = PlayerType.getColor(jugador);
         _midaTauler = gs.getSize();

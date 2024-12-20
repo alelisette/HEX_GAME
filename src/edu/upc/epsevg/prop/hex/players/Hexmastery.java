@@ -5,6 +5,7 @@
 
 package edu.upc.epsevg.prop.hex.players;
 
+import edu.upc.epsevg.prop.hex.Dijkstra;
 import edu.upc.epsevg.prop.hex.HexGameStatus;
 import edu.upc.epsevg.prop.hex.IAuto;
 import edu.upc.epsevg.prop.hex.IPlayer;
@@ -34,11 +35,14 @@ public class Hexmastery implements IPlayer , IAuto {
     long _nodesExplorats;
     private PlayerType _myplayer;
     private boolean _istimeout;
+    private final boolean  _ids;
+    
     
     //constructor minimax 
     public Hexmastery(String name, int profunditatMaxima) {
         this._name = name;
         this._profMax = profunditatMaxima;
+        this._ids = false;
     }
 
     //constructor minimax with IDS
@@ -46,40 +50,58 @@ public class Hexmastery implements IPlayer , IAuto {
         this._name = name;
         this._profMax = 1;
         this._istimeout = false;
+        this._ids = true;
     }
     
     @Override
     public PlayerMove move(HexGameStatus s) {
-        _myplayer = s.getCurrentPlayer();
-        Point millormov = null; //Inicialitzem amb el millormoviment a null
         _nodesExplorats = 0;
-        int h_actual = MENYS_INFINIT;
+        _myplayer = s.getCurrentPlayer();
+        Point millormovTotal = null; //Inicialitzem amb el millormoviment a null
+        int h_total = MENYS_INFINIT;
         int h_alpha = MENYS_INFINIT;
         int h_beta = INFINIT;        
         List<Point> possiblesMovs = obtePossiblesMoviments(s);
-        _istimeout = false;
+        
+        
+        if (_ids) {
+            _istimeout = false;
+            _profMax = 1;
+        
+            while (!_istimeout) {
+                Point millormov = null;
+                int h_actual = MENYS_INFINIT;
 
-        while (!_istimeout) {
+                for (Point mov : possiblesMovs) {
+                    HexGameStatus AuxEstat = new HexGameStatus(s);
+                    AuxEstat.placeStone(mov);
+
+                    int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
+                    if (h_actual < h_minima) {
+                        h_actual = h_minima;
+                        millormov = mov;
+                    }
+                }
+
+                if (!_istimeout && millormov != null) millormovTotal = millormov;  
+                ++_profMax;
+            }
+            
+            return new PlayerMove(millormovTotal, _nodesExplorats, _profMax, SearchType.MINIMAX_IDS);
+        } else {
             for (Point mov : possiblesMovs) {
                 HexGameStatus AuxEstat = new HexGameStatus(s);
                 AuxEstat.placeStone(mov);
-                
+
                 int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
-                if (h_actual < h_minima) {
-                    h_actual = h_minima;
-                    millormov = mov;
+                if (h_total < h_minima) {
+                    h_total = h_minima;
+                    millormovTotal = mov;
                 }
             }
-              
-            ++_profMax;
+            
+            return new PlayerMove(millormovTotal, _nodesExplorats, _profMax, SearchType.MINIMAX);
         }
-        
-        if (_istimeout) {
-        // Devuelve el último nodo completamente evaluado si se detectó timeout
-            return new PlayerMove(millormov, _nodesExplorats, _profMax, SearchType.MINIMAX);
-        }
-        
-        return new PlayerMove(millormov, _nodesExplorats, _profMax, SearchType.MINIMAX);
     }
 
     @Override
@@ -105,7 +127,8 @@ public class Hexmastery implements IPlayer , IAuto {
     private int MIN(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
         if (profunditat == 0 || _istimeout ) {
             ++_nodesExplorats;
-            return 0;
+            //return 0;
+            return Heuristica.getHeuristica(s, _myplayer);
         }
         
         if(s.isGameOver()) {
@@ -147,8 +170,11 @@ public class Hexmastery implements IPlayer , IAuto {
     private int MAX(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
         if (profunditat == 0 || _istimeout) {
             ++_nodesExplorats;
-            return 0;
-        }    //return heuristica;
+            // return 0;
+            return Heuristica.getHeuristica(s, _myplayer);
+            // return getHeuristica(s, _myplayer);
+            // return _heuristica;
+        }   
         
         if (s.isGameOver()) {
             if (s.GetWinner() == _myplayer) {
@@ -185,5 +211,14 @@ public class Hexmastery implements IPlayer , IAuto {
             }
         }
         return moviments;
+    }
+    
+    private int getHeuristica(HexGameStatus hgs, PlayerType jugador) {
+        Dijkstra d = new Dijkstra();
+        
+        int d_jugador = Dijkstra.calculaDistanciaMinima(hgs, jugador);
+        int d_rival = Dijkstra.calculaDistanciaMinima(hgs, PlayerType.opposite(jugador));
+        
+        return 0;  
     }
 }

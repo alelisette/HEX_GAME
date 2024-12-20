@@ -30,18 +30,18 @@ public class UnitTesting {
             { 0, 0, 0, 0,  0, 0, 0, 0, 0},                     // 0   Y
               { 0, 0, 0, 0, 0, 0, 0, 0, 0},                    // 1
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0},                  // 2
-                  { 0, 0, 0, 0, 0, 0, 0, 0, 0},                // 3
+                  { 0, 0, 0, 0, 1, 0, 0, 0, 0},                // 3
                     { 0, 0, 0, 0, 0, 0, 0, 0, 0},              // 4  
-                      { 0, 0, 0, 0, 0, 0, 0, 0, 0},            // 5    
+                      { 1, 1, 1, 1, 0, 0, 0, 0, 0},            // 5    
                         { 0, 0, 0, 0, 0, 0, 0, 0, 0},          // 6      
                           { 0, 0, 0, 0, 0, 0, 0, 0, 0},        // 7       
-                            { 0, 0, 0, 0, 0, 0, 0, 0, 0}       // 8    Y         
+                            { 0, 0, 0, 0, 0, 0, 0, 0, 1}       // 8    Y         
         };
 
 
         HexGameStatus gs = new HexGameStatus(board, PlayerType.PLAYER1);        
         int d = Dijkstra.calculaDistanciaMinima(gs, PlayerType.PLAYER1);
-        System.out.println("Distància mínima: " + d);
+        System.out.println("Distancia minima: " + d);
  
     }
     
