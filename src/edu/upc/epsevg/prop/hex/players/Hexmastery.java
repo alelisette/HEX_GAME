@@ -212,13 +212,5 @@ public class Hexmastery implements IPlayer , IAuto {
         }
         return moviments;
     }
-    
-    private int getHeuristica(HexGameStatus hgs, PlayerType jugador) {
-        Dijkstra d = new Dijkstra();
-        
-        int d_jugador = Dijkstra.calculaDistanciaMinima(hgs, jugador);
-        int d_rival = Dijkstra.calculaDistanciaMinima(hgs, PlayerType.opposite(jugador));
-        
-        return 0;  
-    }
+   
 }
