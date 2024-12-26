@@ -27,8 +27,8 @@ import java.util.List;
  */
 public class Hexmastery implements IPlayer , IAuto {
 
-    private static final int INFINIT = Integer.MAX_VALUE;
-    private static final int MENYS_INFINIT = Integer.MIN_VALUE;
+    private static final double INFINIT = Integer.MAX_VALUE;
+    private static final double MENYS_INFINIT = Integer.MIN_VALUE;
 
     private String _name; // Nombre del jugador
     private int _profMax; // Profundidad máxima del árbol de búsqueda
@@ -58,33 +58,40 @@ public class Hexmastery implements IPlayer , IAuto {
         _nodesExplorats = 0;
         _myplayer = s.getCurrentPlayer();
         Point millormovTotal = null; //Inicialitzem amb el millormoviment a null
-        int h_total = MENYS_INFINIT;
-        int h_alpha = MENYS_INFINIT;
-        int h_beta = INFINIT;        
+        double h_total = MENYS_INFINIT;
+        //double h_alpha = MENYS_INFINIT;
+        //double h_beta = INFINIT;        
         List<Point> possiblesMovs = obtePossiblesMoviments(s);
         
+ 
         
         if (_ids) {
             _istimeout = false;
             _profMax = 1;
-        
+            
             while (!_istimeout) {
                 Point millormov = null;
-                int h_actual = MENYS_INFINIT;
+                double h_actual = MENYS_INFINIT;
+                // int profMax_actual = 1;
 
                 for (Point mov : possiblesMovs) {
                     HexGameStatus AuxEstat = new HexGameStatus(s);
                     AuxEstat.placeStone(mov);
 
-                    int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
+                    double h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), MENYS_INFINIT, INFINIT);
                     if (h_actual < h_minima) {
                         h_actual = h_minima;
                         millormov = mov;
                     }
                 }
-
-                if (!_istimeout && millormov != null) millormovTotal = millormov;  
-                ++_profMax;
+                
+                if (h_actual == INFINIT) return new PlayerMove(millormov, _nodesExplorats, _profMax, SearchType.MINIMAX_IDS);
+                    
+                if (!_istimeout && millormov != null && h_total < h_actual) {
+                    millormovTotal = millormov;
+                    ++_profMax;  
+                }
+                
             }
             
             return new PlayerMove(millormovTotal, _nodesExplorats, _profMax, SearchType.MINIMAX_IDS);
@@ -93,7 +100,7 @@ public class Hexmastery implements IPlayer , IAuto {
                 HexGameStatus AuxEstat = new HexGameStatus(s);
                 AuxEstat.placeStone(mov);
 
-                int h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), h_alpha, h_beta);
+                double h_minima = MIN(AuxEstat, _profMax-1, s.getCurrentPlayerColor(), MENYS_INFINIT, INFINIT);
                 if (h_total < h_minima) {
                     h_total = h_minima;
                     millormovTotal = mov;
@@ -124,13 +131,7 @@ public class Hexmastery implements IPlayer , IAuto {
      * @param _beta Valor beta para poda
      * @return El valor mínimo posible del estado
      */
-    private int MIN(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == 0 || _istimeout ) {
-            ++_nodesExplorats;
-            //return 0;
-            return Heuristica.getHeuristica(s, _myplayer);
-        }
-        
+    private double MIN(HexGameStatus s, int profunditat, int colorAct, double _alpha, double _beta) {
         if(s.isGameOver()) {
             if (s.GetWinner()== _myplayer) {
                 return INFINIT;
@@ -139,14 +140,28 @@ public class Hexmastery implements IPlayer , IAuto {
             } 
         }
         
-        int millorvalor = INFINIT;
+        if (profunditat == 0 || _istimeout ) {
+            ++_nodesExplorats;
+            //return 0;
+            return Heuristica.getHeuristica(s, _myplayer);
+        }
+        
+        /*if(s.isGameOver()) {
+            if (s.GetWinner()== _myplayer) {
+                return INFINIT;
+            } else {
+                return MENYS_INFINIT;
+            } 
+        }*/
+        
+        double millorvalor = INFINIT;
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
         
         for (Point mov : possiblesMoviments) {
             HexGameStatus nouEstat = new HexGameStatus(s);
             nouEstat.placeStone(mov);
             
-            int ha = MAX(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
+            double ha = MAX(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
             millorvalor = Math.min(millorvalor, ha);
             _beta = Math.min(millorvalor, _beta);
             
@@ -167,15 +182,7 @@ public class Hexmastery implements IPlayer , IAuto {
      * @param _beta Valor beta para poda
      * @return El valor máximo posible del estado
      */
-    private int MAX(HexGameStatus s, int profunditat, int colorAct, int _alpha, int _beta) {
-        if (profunditat == 0 || _istimeout) {
-            ++_nodesExplorats;
-            // return 0;
-            return Heuristica.getHeuristica(s, _myplayer);
-            // return getHeuristica(s, _myplayer);
-            // return _heuristica;
-        }   
-        
+    private double MAX(HexGameStatus s, int profunditat, int colorAct, double _alpha, double _beta) {
         if (s.isGameOver()) {
             if (s.GetWinner() == _myplayer) {
                 return INFINIT;
@@ -184,14 +191,37 @@ public class Hexmastery implements IPlayer , IAuto {
             }   
         }
         
-        int millorvalor = MENYS_INFINIT;
+        if (profunditat == 0 || _istimeout) {
+            ++_nodesExplorats;
+            // return 0;
+            /*if (s.isGameOver()) {
+                if (s.GetWinner() == _myplayer) {
+                    return INFINIT;
+                } else {
+                    return MENYS_INFINIT;
+                }   
+            }
+            else*/ return Heuristica.getHeuristica(s, _myplayer);
+            // return getHeuristica(s, _myplayer);
+            // return _heuristica;
+        }   
+        
+        /*if (s.isGameOver()) {
+            if (s.GetWinner() == _myplayer) {
+                return INFINIT;
+            } else {
+                return MENYS_INFINIT;
+            }   
+        }*/
+        
+        double millorvalor = MENYS_INFINIT;
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
         
         for (Point mov : possiblesMoviments) {
             HexGameStatus nouEstat = new HexGameStatus(s);
             nouEstat.placeStone(mov);
             
-            int ha = MIN(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
+            double ha = MIN(nouEstat, profunditat-1, colorAct, _alpha, _beta); 
             millorvalor = Math.max(millorvalor, ha);
             _alpha = Math.max(millorvalor, _alpha);
             

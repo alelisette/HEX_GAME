@@ -18,11 +18,13 @@ public class Dijkstra {
     static private int _colorJugador;
     static private int _midaTauler;
     
+    static private double _mitjanaDistancies;
    
     /*static int getHeuristica(HexGameStatus gs, PlayerType playerType) {
     return 0;
     }*/
-
+    
+    // retorna la MitjanaDelsCamins
     static public int calculaDistanciaMinima(HexGameStatus gs, PlayerType jugador) {
         _hgs = gs;
         _colorJugador = PlayerType.getColor(jugador);
@@ -49,18 +51,41 @@ public class Dijkstra {
         }
         
         int distanciaMinima = Integer.MAX_VALUE; //infinit
+        _mitjanaDistancies = Integer.MAX_VALUE;
+        int sumaDistancies = 0;
+        int comptadorDistancies = 0;
+        int infinits = 0;
         while (!nodesJugador.isEmpty()) {
             Casella node = nodesJugador.poll();
             
-            int distancia;
+            /*int distancia;
             if (nodesInicials.contains(node)) distancia = dijkstra(node, nodesFinals);
             else if (nodesFinals.contains(node)) distancia = dijkstra(node, nodesInicials);
-            else distancia = dijkstra(node, nodesInicials) + dijkstra(node, nodesFinals);
+            else distancia = dijkstra(node, nodesInicials) + dijkstra(node, nodesFinals);*/
+            
+            int distancia = dijkstra(node, nodesInicials) + dijkstra(node, nodesFinals);
             
             distanciaMinima = Math.min(distanciaMinima, distancia);
-        } 
+            if (distancia < Integer.MAX_VALUE) {
+                sumaDistancies += distancia;
+                ++comptadorDistancies;
+            }
+            else sumaDistancies += (_midaTauler*_midaTauler);
+            //else ++infinits;
+        }
+        
+        int totalCamins = comptadorDistancies + infinits;
+        if (totalCamins != 0) {
+            double penalitzacioPerCamíImpossible = 100;
+            double sumaFinal = sumaDistancies + infinits*penalitzacioPerCamíImpossible;
+            _mitjanaDistancies = sumaFinal / totalCamins;
+        }
         
         return distanciaMinima;
+    }
+    
+    static public double calculaMitjanaDistancies() {
+        return _mitjanaDistancies;
     }
     
     static private int dijkstra(Casella inici, Set<Casella> objectiu) {
@@ -84,7 +109,8 @@ public class Dijkstra {
                     if (!tancades.contains(veina)) { // Evitem obstacles (ocupades) i caselles ja visitades
                         int novaDistancia = actual.distancia; 
                         if (_hgs.getPos(veina.fila, veina.columna) == 0) novaDistancia += 1; // Cost constant, solo se le sumara un 1 cuando esa casilla esta libre pero para ir cuando hay un vertice virtual para ir ahi se le suma 0
-                      
+                        else if (_hgs.getPos(veina.fila, veina.columna) == -_colorJugador) novaDistancia = Integer.MAX_VALUE;
+                                
                         if (novaDistancia < veina.distancia) {
                             veina.distancia = novaDistancia;
                             obertes.add(veina);
@@ -94,9 +120,66 @@ public class Dijkstra {
             }
         }
         
-        //return 666; // No s'ha trobat cap camí
-        return Integer.MAX_VALUE; //Retorna infinit
+        return Integer.MAX_VALUE; //Retorna infinit // No s'ha trobat cap camí
     }
+    
+    public static int calculaPonts(HexGameStatus gs, PlayerType jugador) {
+        int midaTauler = gs.getSize();
+        int colorJugador = PlayerType.getColor(jugador);
+        int ponts = 0;
+
+        for (int i = 0; i < midaTauler; i++) {
+            for (int j = 0; j < midaTauler; j++) {
+                // Només considerem caselles buides com a possibles ponts
+                if (gs.getPos(i, j) == 0) {
+                    Casella casellaBuida = new Casella(i, j);
+
+                    // Mira els veïns immediats
+                    List<Casella> veinesJugador = new ArrayList<>();
+                    for (Casella veina : casellaBuida.obteVeines()) {
+                        if (gs.getPos(veina.fila, veina.columna) == colorJugador) {
+                            veinesJugador.add(veina);
+                        }
+                    }
+
+                    // Si hi ha dues o més caselles del mateix color adjacents, és un pont potencial
+                    if (veinesJugador.size() >= 2) {
+                        ponts++;
+                    }
+                }
+            }
+        }
+        return ponts;
+    }
+    
+    public static int calculaConnexions(HexGameStatus gs, PlayerType jugador) {
+        int midaTauler = gs.getSize();
+        int colorJugador = PlayerType.getColor(jugador);
+        Set<Casella> visitades = new HashSet<>();
+        int connexions = 0;
+
+        for (int i = 0; i < midaTauler; i++) {
+            for (int j = 0; j < midaTauler; j++) {
+                if (gs.getPos(i, j) == colorJugador) {
+                    Casella casella = new Casella(i, j);
+                    if (!visitades.contains(casella)) {
+                        // Marca la casella com visitada
+                        visitades.add(casella);
+
+                        // Mira les caselles veïnes del mateix color
+                        for (Casella veina : casella.obteVeines()) {
+                            if (gs.getPos(veina.fila, veina.columna) == colorJugador) {
+                                connexions++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return connexions / 2; // Dividim entre 2 perquè comptem cada connexió dues vegades
+    }
+
+
         
     /* Classe auxiliar: Casella */
     static class Casella {
@@ -148,7 +231,7 @@ public class Dijkstra {
                 int[] direccio = direccions[i];
                 int filaNova = fila+direccio[0];
                 int columnaNova = columna+direccio[1];
-                if (compleixrang(filaNova, columnaNova) && _hgs.getPos(filaNova, columnaNova) != -_colorJugador ) { // pedra del rival = obstacle
+                if (compleixrang(filaNova, columnaNova) /*&& _hgs.getPos(filaNova, columnaNova) != -_colorJugador*/) { // pedra del rival = obstacle
                     veines.add(new Casella(filaNova, columnaNova));
                     if (_hgs.getPos(filaNova, columnaNova) == 0) { //veiem si el vei inmmediat esta lliure adjacent
                         veinslliuresinm[i] = true; //miramos si esa casilla esta libre i ponemos a true porque esta libre
@@ -160,7 +243,7 @@ public class Dijkstra {
                 int[] dirvv = dirvervirtuals[i];
                 int filaNova = fila+dirvv[0];
                 int columnaNova = columna+dirvv[1];
-                if (compleixrang(filaNova, columnaNova) && _hgs.getPos(filaNova, columnaNova) != -_colorJugador  && veinslliuresinm[i%6] && veinslliuresinm[(i+1)%6]) { // pedra del rival = obstacle ja no cal mirar
+                if (compleixrang(filaNova, columnaNova) /*&& _hgs.getPos(filaNova, columnaNova) != -_colorJugador*/  && veinslliuresinm[i%6] && veinslliuresinm[(i+1)%6]) { // pedra del rival = obstacle ja no cal mirar
                     //i es i+1 porque para anaizar el vecino virtual i se ha de explicar el vecino inmediato i i el i+1 (foto)
                     veines.add(new Casella(filaNova, columnaNova));
                 }
