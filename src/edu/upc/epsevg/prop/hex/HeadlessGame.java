@@ -33,7 +33,7 @@ public class HeadlessGame {
         IPlayer player1 = new H_E_X_Player(2/*GB*/);   
         IPlayer player2 = new Hexmastery("HexMastery"); // usa IDS
         
-        HeadlessGame game = new HeadlessGame(player1, player2, 5, 10/*s timeout*/, 10/*games*/);
+        HeadlessGame game = new HeadlessGame(player1, player2, 5, 10/*s timeout*/, 5/*games*/);
         GameResult gr = game.start();
         System.out.println(gr);
 

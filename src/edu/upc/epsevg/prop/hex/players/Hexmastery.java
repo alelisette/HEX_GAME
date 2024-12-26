@@ -63,14 +63,14 @@ public class Hexmastery implements IPlayer , IAuto {
         //double h_beta = INFINIT;        
         List<Point> possiblesMovs = obtePossiblesMoviments(s);
         
- 
+        Point millormov = null;
         
         if (_ids) {
             _istimeout = false;
             _profMax = 1;
             
             while (!_istimeout) {
-                Point millormov = null;
+                //Point millormov = null;
                 double h_actual = MENYS_INFINIT;
                 // int profMax_actual = 1;
 

@@ -28,7 +28,7 @@ public class Game {
             @Override
             public void run() {
                 
-                IPlayer player2 = new H_E_X_Player(2/*GB*/); //limit de RAM
+                IPlayer player1 = new H_E_X_Player(2/*GB*/); //limit de RAM
                 //IPlayer player1 = new RandomPlayer("Pep" /*nom*/); 
                 //IPlayer player1 = new HumanPlayer("Human");
 
@@ -36,7 +36,7 @@ public class Game {
                 //IPlayer player2 = new H_E_X_Player(2/*GB*/); //limit de RAM
                 
                 //IPlayer player2 = new Hexmastery("HexMastery", 8);              
-                IPlayer player1 = new Hexmastery("HexMastery"); // usa IDS
+                IPlayer player2 = new Hexmastery("HexMastery"); // usa IDS
                 
                 new Board(player1 , player2, 6 /*mida*/,  10 /*s*/, false); //player, mida de tauler i al principi fer.ho amb 9 i despres els tests fer-ho amb 11
                 //el time runnow es de 10s , el que hem de fer es un MINIMAX on li hem de dir el numero denivells i quan fem aixo hem de fer un MINIMAX +ID  (Iterative detecting)  començo
