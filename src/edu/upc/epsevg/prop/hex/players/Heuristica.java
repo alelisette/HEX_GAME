@@ -41,23 +41,31 @@ public class Heuristica {
         //int midaTauler = hgs.getSize();
         
         int d_jugador = Dijkstra.calculaDistanciaMinima(hgs, jugador);
-        double m_jugador = Dijkstra.calculaMitjanaDistancies();
+        double m_jugador = Dijkstra.calculaMitjanaDistancies(hgs, jugador);
         
         int d_rival = Dijkstra.calculaDistanciaMinima(hgs, rival);
-        double m_rival = Dijkstra.calculaMitjanaDistancies();
+        double m_rival = Dijkstra.calculaMitjanaDistancies(hgs, rival);
         
         
         //double diferenciaDist = d_rival - d_jugador;
         
         //double diferenciaMitj = m_rival - m_jugador;
         //double diferencia = diferenciaDist - diferenciaMitj;
-        int enllacos_jugador = calculPesCasella(_color);
-        int enllacos_rival = calculPesCasella(-_color);
+        //int enllacos_jugador = calculPesCasella(_color);
+        //int enllacos_rival = calculPesCasella(-_color);
         //int diferenciaEnllacos = enllacos_jugador - enllacos_rival;
         
+        //return d_rival - d_jugador;
+
+        double d = d_rival - d_jugador;
+        double m = m_rival - m_jugador;
         
-        
-        return (m_rival+enllacos_jugador) - (m_jugador+enllacos_rival);
+        double h = d;
+        if (d == 0) h = m;
+
+        return h;
+        // return m_rival - m_jugador; // guanya 5x5 si es primer
+        //return (m_rival+enllacos_jugador) - (m_jugador+enllacos_rival);
     }
     
     static private int calculPesCasella(int color) {

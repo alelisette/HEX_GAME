@@ -87,7 +87,8 @@ public class Hexmastery implements IPlayer , IAuto {
                 
                 if (h_actual == INFINIT) return new PlayerMove(millormov, _nodesExplorats, _profMax, SearchType.MINIMAX_IDS);
                     
-                if (!_istimeout && millormov != null && h_total < h_actual) {
+                if (!_istimeout && millormov != null /*&& h_total < h_actual*/) {
+                    //h_total = h_actual;
                     millormovTotal = millormov;
                     ++_profMax;  
                 }
