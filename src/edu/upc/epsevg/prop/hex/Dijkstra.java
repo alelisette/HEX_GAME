@@ -26,14 +26,14 @@ public class Dijkstra {
     private static int[][] distancias;
 
     // Método principal para calcular la distancia mínima (piedras que faltan).
-    public static int calculaDistanciaMinima(HexGameStatus gs, PlayerType jugador) {
+    public static int calculaDistanciaMinima(HexGameStatus gs, PlayerType jugador, PlayerType jugadorHex) {
         inicializa(gs.getSize());
         
         // Cola de prioridad para implementar Dijkstra.
         PriorityQueue<Node> cola = new PriorityQueue<>(Comparator.comparingInt(n -> n.distancia));
 
         // Añadir nodos iniciales al considerar los bordes del jugador.
-        inicializarNodosIniciales(gs, jugador, cola);
+        inicializarNodosIniciales(gs, jugador, cola, jugadorHex);
 
         // Algoritmo de Dijkstra.
         while (!cola.isEmpty()) {
@@ -61,15 +61,15 @@ public class Dijkstra {
     public static double calculaMitjanaDistancies(HexGameStatus gs, PlayerType jugador) {
         int size = distancias.length;
         int suma = 0, count = 0;
-        for (int x = 0; x < gs.getSize(); x++) {
-            for (int y = 0; y < gs.getSize(); y++) {
-                int d = distancias[x][y];
+        for (int[] fila : distancias) {
+            for (int d : fila) {
+                //int d = distancias[x][y];
                 if (d != Integer.MAX_VALUE) suma += d;
                 else suma += (size*size); // per tenir en compte els infinits (no hi ha camí possible)
                 count++;
             }
         }
-        return count > 0 ? (double) suma / count : (size*size);
+        return count > 0 ? (double) suma / count : size*size;
     }
 
     // Inicializa estructuras necesarias.
@@ -81,8 +81,11 @@ public class Dijkstra {
     }
 
     // Añade nodos iniciales según los bordes relevantes para el jugador.
-    private static void inicializarNodosIniciales(HexGameStatus gs, PlayerType jugador, PriorityQueue<Node> cola) {
+    private static void inicializarNodosIniciales(HexGameStatus gs, PlayerType jugador, PriorityQueue<Node> cola, PlayerType jugadorHex) {
         int size = gs.getSize();
+        //int valor = 1;
+        //if (jugadorHex == PlayerType.PLAYER2) valor = -1;
+        
         if (jugador == PlayerType.PLAYER1) { // Blanco: conecta filas superior e inferior.
             for (int x = 0; x < size; x++) {
                 Point p = new Point(0, x);
@@ -96,7 +99,7 @@ public class Dijkstra {
                     cola.add(new Node(p, 0));
                 }
                 else {
-                    distancias[0][x] = Integer.MAX_VALUE;
+                    //distancias[0][x] = Integer.MAX_VALUE;
                     cola.add(new Node(p, Integer.MAX_VALUE));
                 }
             }
@@ -108,12 +111,12 @@ public class Dijkstra {
                     distancias[y][0] = 1;
                     cola.add(new Node(p, 1));
                 }
-                else if (casella == -1) {
+                else if (casella == 1) {
                     distancias[y][0] = 0;
                     cola.add(new Node(p, 0));
                 }
                 else {
-                    distancias[y][0] = Integer.MAX_VALUE;
+                   // distancias[y][0] = Integer.MAX_VALUE;
                     cola.add(new Node(p, Integer.MAX_VALUE));
                 }
             }
@@ -125,7 +128,7 @@ public class Dijkstra {
         int size = gs.getSize();
         int color = gs.getPos(p);
         if (color == 0) return 1; // Casilla vacía.
-        return (color == PlayerType.getColor(jugador)) ? 0 : (size*size); // size^2 penaliza rivales.
+        return (color == PlayerType.getColor(jugador)) ? 0 : size*size; // size^2 penaliza rivales.
     }
 
     // Obtiene los vecinos válidos para un punto.

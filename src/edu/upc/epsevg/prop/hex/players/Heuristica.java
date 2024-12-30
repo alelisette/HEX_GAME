@@ -40,10 +40,10 @@ public class Heuristica {
         PlayerType rival = PlayerType.opposite(jugador);
         //int midaTauler = hgs.getSize();
         
-        int d_jugador = Dijkstra.calculaDistanciaMinima(hgs, jugador);
+        int d_jugador = Dijkstra.calculaDistanciaMinima(hgs, jugador, jugador);
         double m_jugador = Dijkstra.calculaMitjanaDistancies(hgs, jugador);
         
-        int d_rival = Dijkstra.calculaDistanciaMinima(hgs, rival);
+        int d_rival = Dijkstra.calculaDistanciaMinima(hgs, rival, jugador);
         double m_rival = Dijkstra.calculaMitjanaDistancies(hgs, rival);
         
         

@@ -39,7 +39,7 @@ public class UnitTesting {
         };
 
         HexGameStatus gs = new HexGameStatus(board, PlayerType.PLAYER1);        
-        int d = Dijkstra.calculaDistanciaMinima(gs, PlayerType.PLAYER2);
+        int d = Dijkstra.calculaDistanciaMinima(gs, PlayerType.PLAYER2, PlayerType.PLAYER1);
         double m = Dijkstra.calculaMitjanaDistancies(gs, PlayerType.PLAYER1);
         System.out.println("Distancia minima: " + d);
         System.out.println("Mitjana distancies: " + m);
