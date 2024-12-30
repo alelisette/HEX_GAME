@@ -68,18 +68,7 @@ public class Heuristica {
         //return (m_rival+enllacos_jugador) - (m_jugador+enllacos_rival);
     }
     
-    static private int calculPesCasella(int color) {
-        int pes = 0;
-        for (int i=0; i<_midaTauler; ++i) {
-            for (int j=0; j <_midaTauler; ++j) {
-                Casella c = new Casella(i,j);
-                if (_hgs.getPos(i, j) == color) {
-                    pes+=c.obteVeinesVirtuals().size();
-                }
-            }
-        }
-        return pes;
-    }
+
      
     
     /* Classe auxiliar: Casella */

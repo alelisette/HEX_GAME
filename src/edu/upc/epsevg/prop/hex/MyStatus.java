@@ -9,25 +9,48 @@ package edu.upc.epsevg.prop.hex;
  * @author Aleli
  */
 public class MyStatus extends HexGameStatus{
-    
-    public MyStatus(int i) {
-        super(i);
+  
+    public int bestMoveIndex, depth;
+    public double eval;
+    public nType type;
+    public enum nType{
+        EXACT, ALFA, BETA
     }
-    /* OPTIMITZACIONS AMB EL IDS + FALTA IMPLEMENTAR EL METODE HASHCODE QUE FACI EL METODE DE FUNCIO DE HASH
-    //TAULER
-    HexGameStatus status; //--->hash
     
-        long[][] zobrist = new long[11][11][3];
-        for (int i=0; i<11; ++i) {
-            for(int j=0; j<11; j++) {
-                for (int k=0; k < 3; k++) {
-                    zobrist[i][j][k] = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE);
-                }
-            }
+
+    // Constructor de MyStatus
+    public MyStatus(HexGameStatus status, double eval, int bestMoveIndex, int depth, nType type) {
+        super(status); // Llama al constructor de HexGameStatus con un estado inicial
+        this.bestMoveIndex = bestMoveIndex;
+        this.depth = depth;
+        this.eval = eval;
+        this.type = type;
+    }
+
+    // Sobrescribir el método equals
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-        long hash=0;
-        
-        int valor = status.getPos(x, y);
-        hash ^= zobrist[x][y][valor+1];
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final MyStatus other = (MyStatus) obj;
+      /*  return this.bestMoveIndex == other.bestMoveIndex &&
+               this.eval == other.eval &&
+               this.depth == other.depth &&
+               this.type == other.type;
     */
+            if (this.bestMoveIndex != other.bestMoveIndex) {
+            return false;
+        }
+        return this.eval == other.eval;
+    
+    }
+
+
+    
+    
+    
 }

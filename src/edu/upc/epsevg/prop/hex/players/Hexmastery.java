@@ -147,13 +147,6 @@ public class Hexmastery implements IPlayer , IAuto {
             return Heuristica.getHeuristica(s, _myplayer);
         }
         
-        /*if(s.isGameOver()) {
-            if (s.GetWinner()== _myplayer) {
-                return INFINIT;
-            } else {
-                return MENYS_INFINIT;
-            } 
-        }*/
         
         double millorvalor = INFINIT;
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
@@ -194,27 +187,11 @@ public class Hexmastery implements IPlayer , IAuto {
         
         if (profunditat == 0 || _istimeout) {
             ++_nodesExplorats;
-            // return 0;
-            /*if (s.isGameOver()) {
-                if (s.GetWinner() == _myplayer) {
-                    return INFINIT;
-                } else {
-                    return MENYS_INFINIT;
-                }   
-            }
-            else*/ return Heuristica.getHeuristica(s, _myplayer);
-            // return getHeuristica(s, _myplayer);
-            // return _heuristica;
+             return Heuristica.getHeuristica(s, _myplayer);
+
         }   
         
-        /*if (s.isGameOver()) {
-            if (s.GetWinner() == _myplayer) {
-                return INFINIT;
-            } else {
-                return MENYS_INFINIT;
-            }   
-        }*/
-        
+
         double millorvalor = MENYS_INFINIT;
         List<Point> possiblesMoviments = obtePossiblesMoviments(s);
         
