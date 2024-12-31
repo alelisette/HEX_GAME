@@ -180,8 +180,7 @@ public class Hexmastery implements IPlayer , IAuto {
                         MyStatus newStatus = new MyStatus(s, _z, h_actual, millormovTotal, _profMax, tipo);
                         _tt.put(hash, newStatus);
                     }
-                }
-                
+                }                
             }
             
             return new PlayerMove(millormovTotal, _nodesExplorats, _profMax, SearchType.MINIMAX_IDS);
@@ -226,7 +225,8 @@ public class Hexmastery implements IPlayer , IAuto {
                         _tt.put(hash, newStatus);
                     }
                 }
-            }
+                if (millormovTotal == null) millormovTotal = possiblesMovs.get(0);
+            }    
             
             return new PlayerMove(millormovTotal, _nodesExplorats, _profMax, SearchType.MINIMAX);
         }
