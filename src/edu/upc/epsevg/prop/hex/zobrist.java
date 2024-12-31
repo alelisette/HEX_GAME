@@ -18,13 +18,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public class zobrist {
 
     private final long[][][] zobrist; // Tabla de valores aleatorios
-    private final SecureRandom random = new SecureRandom();
-
+    int _mida;
+    
     /**
      * Constructor: inicializa la tabla de Zobrist con valores aleatorios.
+     * @param mida
      */
-    public zobrist() {
-        this.zobrist = new long[11][11][3]; // Tablero 11x11 con 3 estados posibles: vacío, jugador 1, jugador -1
+    public zobrist(int mida) {
+        zobrist = new long[mida][mida][3]; // Tablero 11x11 con 3 estados posibles: vacío, jugador 1, jugador -1
+        _mida = mida;
         initTable();
     }
 
@@ -32,8 +34,8 @@ public class zobrist {
      * Inicializa la tabla Zobrist con valores aleatorios únicos para cada posición y estado.
      */
     private void initTable() {
-        for (int i = 0; i < 11; ++i) {
-            for (int j = 0; j < 11; ++j) {
+        for (int i = 0; i < _mida; ++i) {
+            for (int j = 0; j < _mida; ++j) {
                 for (int k = 0; k < 3; ++k) { // 3 estados: vacío, jugador 1, jugador -1
                     zobrist[i][j][k] = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE);
                 }
@@ -59,6 +61,10 @@ public class zobrist {
                 //}
             }
         }
+        
+        return hash;
+    }
+    
  /* OPTIMITZACIONS AMB EL IDS + FALTA IMPLEMENTAR EL METODE HASHCODE QUE FACI EL METODE DE FUNCIO DE HASH
     //TAULER
     HexGameStatus status; //--->hash
@@ -76,7 +82,13 @@ public class zobrist {
         int valor = status.getPos(x, y);
         hash ^= zobrist[x][y][valor+1];
     */
-
-        return hash;
+    public long updateHash(long currentHash, int x, int y, int oldValue, int newValue) {
+        if (oldValue != 0) {
+            currentHash ^= zobrist[x][y][oldValue + 1];
+        }
+        if (newValue != 0) {
+            currentHash ^= zobrist[x][y][newValue + 1];
+        }
+        return currentHash;
     }
 }

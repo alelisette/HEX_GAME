@@ -111,7 +111,7 @@ public class Dijkstra {
                     distancias[y][0] = 1;
                     cola.add(new Node(p, 1));
                 }
-                else if (casella == 1) {
+                else if (casella == 1) { // casella == 1
                     distancias[y][0] = 0;
                     cola.add(new Node(p, 0));
                 }

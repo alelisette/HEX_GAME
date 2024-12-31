@@ -31,7 +31,7 @@ public class HeadlessGame {
 
         //IPlayer player1 = new Random_Player("Paco");
         IPlayer player2 = new H_E_X_Player(2/*GB*/);   
-        IPlayer player1 = new Hexmastery("HexMastery"); // usa IDS
+        IPlayer player1 = new Hexmastery("HexMastery", 5); // usa IDS
         
         HeadlessGame game = new HeadlessGame(player1, player2, 5, 10/*s timeout*/, 5/*games*/);
         GameResult gr = game.start();
