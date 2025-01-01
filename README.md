@@ -1,2 +1,2 @@
 # HEX_GAME
-Project PROP
+Jugador IA utilitzant l'algoritme Dijkstra aplicat al joc HEX. 
